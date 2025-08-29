@@ -1,41 +1,6 @@
-// const express = require("express");
+
 const mongoose = require("mongoose");
-// const cors = require("cors");
-// require("dotenv").config();
 
-// const app = express();
-// app.use(cors());
-// app.use(express.json());
-
-// // MongoDB connection
-// mongoose.connect(process.env.MONGO_URI, {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-// }).then(() => console.log("MongoDB Connected"))
-// .catch(err => console.log(err));
-
-// // Schema
-// const reminderSchema = new mongoose.Schema({
-//   time: String,
-//   message: String
-// });
-// const Reminder = mongoose.model("Reminder", reminderSchema);
-
-// // Routes
-// app.get("/reminders", async (req, res) => {
-//   const reminders = await Reminder.find();
-//   res.json(reminders);
-// });
-
-// app.post("/reminders", async (req, res) => {
-//   const { time, message } = req.body;
-//   const reminder = new Reminder({ time, message });
-//   await reminder.save();
-//   res.json(reminder);
-// });
-
-// const PORT = process.env.PORT || 5000;
-// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 require('dotenv').config();
 const express = require('express');
@@ -46,7 +11,24 @@ const reminderRoutes = require('./routes/reminders');
 const startReminderChecker = require('./cron/checkReminders');
 
 const app = express();
-app.use(cors({ origin: process.env.FRONTEND_URL || '*' }));
+const allowedOrigins = [
+  "https://drinkingwaterreminder-frontend.onrender.com", // ✅ your Render frontend
+  "http://localhost:3000", // ✅ for local dev (CRA)
+  "http://localhost:5173"  // ✅ for local dev (Vite)
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
+
 app.use(express.json());
 
 if (!process.env.MONGO_URI) {
