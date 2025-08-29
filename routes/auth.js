@@ -64,7 +64,7 @@ router.post('/register', async (req,res)=>{
 });
 
 // Login
-router.post('/login', async (req,res)=>{
+router.post('/api/auth/login', async (req,res)=>{
   const { email,password } = req.body;
   try {
     const user = await User.findOne({ email });
@@ -126,20 +126,20 @@ router.put('/profile', auth, async (req,res)=>{
   } catch(err){ res.status(500).send('Server error'); }
 });
 
-// Endpoint to mark water consumed
-router.put('/drink', auth, async (req,res)=>{
-  try {
-    const { liters } = req.body;
-    const user = await User.findById(req.user.id);
-    if(!user) return res.status(404).json({ message: 'User not found' });
+// // Endpoint to mark water consumed
+// router.put('/drink', auth, async (req,res)=>{
+//   try {
+//     const { liters } = req.body;
+//     const user = await User.findById(req.user.id);
+//     if(!user) return res.status(404).json({ message: 'User not found' });
 
-    user.consumedToday += Number(liters);
-    if(user.consumedToday > user.dailyWaterLiters) user.consumedToday = user.dailyWaterLiters;
+//     user.consumedToday += Number(liters);
+//     if(user.consumedToday > user.dailyWaterLiters) user.consumedToday = user.dailyWaterLiters;
 
-    await user.save();
-    res.json({ consumedToday: user.consumedToday, dailyWaterLiters: user.dailyWaterLiters });
-  } catch(err){ res.status(500).send('Server error'); }
-});
+//     await user.save();
+//     res.json({ consumedToday: user.consumedToday, dailyWaterLiters: user.dailyWaterLiters });
+//   } catch(err){ res.status(500).send('Server error'); }
+// });
 
 
 // PUT /auth/drink
